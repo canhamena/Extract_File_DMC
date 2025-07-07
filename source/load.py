@@ -52,9 +52,8 @@ def carrgaemnto_to_sqlserver(dados):
         # Iniciar transação
         transacao = conn.begin()
         insp = inspect(engine)
-        tabela = "Saidas_da_RGT"
-        AdicionarColunas(dados,tabela)
-     
+        tabela = "Controlo_de_Incidentes_de_Trabalho"
+        AdicionarColunas(dados,tabela) 
         try:
             if dados.empty == True:
                     print(f"error : ")
@@ -67,7 +66,7 @@ def carrgaemnto_to_sqlserver(dados):
             result  = conn.execute(Delete_intervalo)
             if result.rowcount > 0:"""
             print("Carregando dados na tabela temporária...")
-            dados.to_sql("Controlo_de_Alcoolemia", con=engine, if_exists="append", index=False)
+            dados.to_sql("Controlo_de_Incidentes_de_Trabalho", con=engine, if_exists="append", index=False)
             insert_query_historico = text("""
                    INSERT INTO DAF_historico_carregamentos ([origem dos dados])
                   VALUES (:origem_dos_dados)
@@ -88,9 +87,9 @@ def carrgaemnto_to_sqlserver(dados):
 def load_data():
      
      try:
-          return_data()
+          #return_data()
           dados = extract_file_excel()
-          frame = retorna_Transforma_Controlo_de_Alcoolemia(dados)
+          frame = retorna_Transforma_Controlo_Incidente_Trabalho(dados)
           dado=carrgaemnto_to_sqlserver(frame)
           #file_backup()
           #delete_folder()

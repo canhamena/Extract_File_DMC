@@ -117,6 +117,39 @@ def  retorna_Transforma_Controlo_de_Alcoolemia(frame):
      print(f" Error : {e}") 
      return pd.DataFrame()
  
+def  retorna_Transforma_Controlo_Acidente_Trabalho(frame):
+ try:
+     header_row = frame.apply(lambda row: row.astype(str).str.contains('AT n.º').any(), axis=1).idxmax()
+     #fim = frame.apply(lambda row: row.astype(str).str.contains('v1').any(), axis=1).idxmax()
+     frame = frame[header_row:].reset_index(drop=True)
+     frame.columns = frame.iloc[0]
+     df = frame[1:].reset_index(drop=True)
+     df = df.dropna(how='all')
+     df = df.loc[:, df.columns.notna()]
+     df["Ano"] = "2025"
+     df = df[df['Data do AT'].notnull() & (df['Data do AT'] != '')]
+     df = df[df["AT n.º"].notna()]
+     return df
+ except requests.exceptions.RequestException as e:
+     print(f" Error : {e}") 
+     return pd.DataFrame()
+ 
+def retorna_Transforma_Controlo_Incidente_Trabalho(frame):
+ try:
+     header_row = frame.apply(lambda row: row.astype(str).str.contains('n.º').any(), axis=1).idxmax()
+     #fim = frame.apply(lambda row: row.astype(str).str.contains('v1').any(), axis=1).idxmax()
+     frame = frame[header_row:].reset_index(drop=True)
+     frame.columns = frame.iloc[0]
+     df = frame[1:].reset_index(drop=True)
+     df = df.dropna(how='all')
+     df = df.loc[:, df.columns.notna()]
+     df["Ano"] = "2025"
+     df = df[df["n.º"].notna()]
+     return df
+ except requests.exceptions.RequestException as e:
+     print(f" Error : {e}") 
+     return pd.DataFrame()
+ 
 
  
 

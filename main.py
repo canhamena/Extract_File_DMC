@@ -11,10 +11,13 @@ def main():
 
  #search_file_excel(pasta_destino)
  #dados = load_data()
- #print(dados)
+ ##print(dados)
  return_data()
- frame = extract_file_excel()
- print(frame)
+ """frame = extract_file_excel()
+ dados = retorna_Transforma_Controlo_Incidente_Trabalho(frame)
+ print(dados)"""
+ """dados = retorna_Transforma_Controlo_Acidente_Trabalho(frame)
+ print(dados)"""
  """ frame = extract_file_excel()
  dados = retorna_Transforma_Controlo_de_Alcoolemia(frame)
  print(dados)"""
