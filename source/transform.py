@@ -81,6 +81,45 @@ def retorna_Transforma_Plano_Acao(frame):
  except requests.exceptions.RequestException as e:
      print(f" Error : {e}") 
      return pd.DataFrame()
+ 
+
+def  retorna_Transforma_Saida_RGT(frame):
+ try:
+     header_row = frame.apply(lambda row: row.astype(str).str.contains('N.º').any(), axis=1).idxmax()
+     is_empty = frame.iloc[header_row+1:].isna().all(axis=1)
+     fim = is_empty.idxmax()
+     frame = frame[header_row:fim].reset_index(drop=True)
+     frame.columns = frame.iloc[0]
+     df = frame[1:].reset_index(drop=True)
+     df = df.dropna(how='all')
+     df = df.loc[:, df.columns.notna()]
+     df["Ano"] = pd.to_datetime(df['Data RGT']).dt.year 
+     
+     return df
+   
+ except requests.exceptions.RequestException as e:
+     print(f" Error : {e}") 
+     return pd.DataFrame()
+ 
+
+def  retorna_Transforma_Controlo_de_Alcoolemia(frame):
+ try:
+     header_row = frame.apply(lambda row: row.astype(str).str.contains('Data').any(), axis=1).idxmax()
+     #fim = frame.apply(lambda row: row.astype(str).str.contains('v1').any(), axis=1).idxmax()
+     frame = frame[header_row:].reset_index(drop=True)
+     frame.columns = frame.iloc[0]
+     df = frame[1:].reset_index(drop=True)
+     df = df.dropna(how='all')
+     df.rename(columns={df.columns[6]: 'Teste_alcool'}, inplace=True)
+     df["Ano"] =  "2025"
+     return df
+ except requests.exceptions.RequestException as e:
+     print(f" Error : {e}") 
+     return pd.DataFrame()
+ 
+
+ 
+
 
 
   

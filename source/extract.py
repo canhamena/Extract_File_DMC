@@ -89,7 +89,7 @@ def extract_file_excel():
     try:
        
        caminho = r"C:\Teste\excel_dmc\documento_baixado.xlsx"
-       nome_folha_atual =  " "
+       nome_folha_atual =  "2022"
        # Verificar se a folha existe
        with pd.ExcelFile(caminho) as excel:
          if nome_folha_atual == " ":
@@ -114,7 +114,8 @@ def return_data():
    nome_arquivo = os.path.join(pasta_destino, "documento_baixado.xlsx")
    dados = extract_api(r"http://api.rcsangola.co.ao/api/qhsa")
    if dados.empty : return "Dados Não encontrado"
-   dado = convert_type_data(dados,"Plano de Acção","Em vigor")
+   #Plano de Acção,Saídas da RGT,Controlo de Alcoolemia
+   dado = convert_type_data(dados,"Controlo de Acidentes de Trabalho","Em vigor")
    dawnload_pdf(r"http://api.rcsangola.co.ao/api/download-document",dado)
    # dados = extract_file_excel(pasta_destino)
    return dados

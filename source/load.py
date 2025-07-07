@@ -52,23 +52,23 @@ def carrgaemnto_to_sqlserver(dados):
         # Iniciar transação
         transacao = conn.begin()
         insp = inspect(engine)
-        tabela = "Plano_de_Accao"
+        tabela = "Saidas_da_RGT"
         AdicionarColunas(dados,tabela)
      
         try:
             if dados.empty == True:
-                    print(f"error : {e}")
+                    print(f"error : ")
                     envio_email_notificacao("erro: Api fora de serviço...")
                     return 
             # Carregar os dados da API para a tabela temporária
-            Delete_intervalo = text(f"""
-                 delete from {tabela} where  Ano = {ano_em_vigor} 
+            """ Delete_intervalo = text(f"""
+                 #delete from {tabela} where  Ano = {ano_em_vigor} 
             """)
             result  = conn.execute(Delete_intervalo)
-            if result.rowcount > 0:
-               print("Carregando dados na tabela temporária...")
-               dados.to_sql("Plano_de_Accao", con=engine, if_exists="append", index=False)
-               insert_query_historico = text("""
+            if result.rowcount > 0:"""
+            print("Carregando dados na tabela temporária...")
+            dados.to_sql("Controlo_de_Alcoolemia", con=engine, if_exists="append", index=False)
+            insert_query_historico = text("""
                    INSERT INTO DAF_historico_carregamentos ([origem dos dados])
                   VALUES (:origem_dos_dados)
                  """)
@@ -89,8 +89,8 @@ def load_data():
      
      try:
           return_data()
-          dados =  frame = extract_file_excel()
-          frame = retorna_Transforma_Plano_Acao(dados)
+          dados = extract_file_excel()
+          frame = retorna_Transforma_Controlo_de_Alcoolemia(dados)
           dado=carrgaemnto_to_sqlserver(frame)
           #file_backup()
           #delete_folder()
