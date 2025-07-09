@@ -52,7 +52,7 @@ def carrgaemnto_to_sqlserver(dados):
         # Iniciar transação
         transacao = conn.begin()
         insp = inspect(engine)
-        tabela = "Controlo_de_Incidentes_de_Trabalho"
+        tabela = "Cronograma_Minutos_Seguranca"
         AdicionarColunas(dados,tabela) 
         try:
             if dados.empty == True:
@@ -66,10 +66,10 @@ def carrgaemnto_to_sqlserver(dados):
             result  = conn.execute(Delete_intervalo)
             if result.rowcount > 0:"""
             print("Carregando dados na tabela temporária...")
-            dados.to_sql("Controlo_de_Incidentes_de_Trabalho", con=engine, if_exists="append", index=False)
+            dados.to_sql("Cronograma_Minutos_Seguranca", con=engine, if_exists="append", index=False)
             insert_query_historico = text("""
                    INSERT INTO DAF_historico_carregamentos ([origem dos dados])
-                  VALUES (:origem_dos_dados)
+                   VALUES (:origem_dos_dados)
                  """)
                   # Executando o comando de inserção com os parâmetros
             conn.execute(insert_query_historico, { 'origem_dos_dados': "Inserido com sucesso IndicadoresDesempenho"})
@@ -89,7 +89,7 @@ def load_data():
      try:
           #return_data()
           dados = extract_file_excel()
-          frame = retorna_Transforma_Controlo_Incidente_Trabalho(dados)
+          frame = retorna_Transforma_Cronograma_Minutos_seguranca(dados)
           dado=carrgaemnto_to_sqlserver(frame)
           #file_backup()
           #delete_folder()

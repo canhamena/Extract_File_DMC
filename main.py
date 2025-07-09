@@ -6,14 +6,20 @@ from source.extract import *
 
 
 def main():
-
- 
-
+ #load_data()
  #search_file_excel(pasta_destino)
- #dados = load_data()
- ##print(dados)
- return_data()
+ #print(dados)
+ dados = return_data()
+ print(dados)
  """frame = extract_file_excel()
+ dados = retorna_Transforma_Cronograma_Minutos_seguranca(frame)
+ print(dados)
+dados = retorna_Transforma_Cronograma_Minutos_seguranca(frame)
+ print(dados)
+frame = extract_file_excel()
+ dados = retorna_Transforma_Impressora_Doadas(frame)
+ print(dados)
+ frame = extract_file_excel()
  dados = retorna_Transforma_Controlo_Incidente_Trabalho(frame)
  print(dados)"""
  """dados = retorna_Transforma_Controlo_Acidente_Trabalho(frame)

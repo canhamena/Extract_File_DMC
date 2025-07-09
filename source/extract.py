@@ -18,7 +18,14 @@ os.makedirs(pasta_destino, exist_ok=True)
 nome_arquivo = os.path.join(pasta_destino, "documento_baixado.xlsx")
 
 HEADERS = {"API-KEY" : 'vbHNzgBPW9L9ud7MNY+oMMYgfhi7nWxisSKAGM2u0pI'}
+params = {
+    "cabinet": "1f07bd25-6fab-47ec-a89e-3c0f3158226e",
+    "count": 2
+}
 
+headers = {
+    "API-KEY": "vbHNzgBPW9L9ud7MNY+oMMYgfhi7nWxisSKAGM2u0pI"
+}
 
 ##{'API-KEY' : 'vbHNzgBPW9L9ud7MNY+oMMYgfhi7nWxisSKAGM2u0pI'}
 
@@ -31,7 +38,7 @@ def extract_api(api_url):
     pagina = 1
     dados = pd.DataFrame()
     while True:
-        response = requests.get(api_url,params={'count': limit , 'page': pagina})
+        response = requests.get(api_url,headers=headers,params={'count': limit ,'cabinet':'2c1198ab-111e-40a1-81ea-407104d083da','field':'Tipo Documento','value':'Agenda Semanal'})
         if(response.status_code != 200):
              break
         data = response.json()
@@ -51,7 +58,7 @@ def extract_api(api_url):
 
 def dawnload_pdf(api_url,dados):
  try:
-     
+  
      if len(dados) >1:
          dados = dados.iloc[:1]
      docuntoId = dados["Document ID"].replace(" ", "")
@@ -87,9 +94,8 @@ def extrair_Zip(pasta_destino,caminho_zip):
  
 def extract_file_excel():
     try:
-       
        caminho = r"C:\Teste\excel_dmc\documento_baixado.xlsx"
-       nome_folha_atual =  "2025"
+       nome_folha_atual =  "MS - 2025"
        # Verificar se a folha existe
        with pd.ExcelFile(caminho) as excel:
          if nome_folha_atual == " ":
@@ -112,10 +118,16 @@ def return_data():
   
    os.makedirs(pasta_destino, exist_ok=True)
    nome_arquivo = os.path.join(pasta_destino, "documento_baixado.xlsx")
-   dados = extract_api(r"http://api.rcsangola.co.ao/api/qhsa")
+   #dados = extract_api(r"http://api.rcsangola.co.ao/api/qhsa")
+   dados = extract_api(r"http://api.rcsangola.co.ao/api/v1/doc-dinamico")
+   dados = dados['data'].apply(pd.Series)
+   return dados['Tipo Documento'].unique()
    if dados.empty : return "Dados Não encontrado"
-   #Plano de Acção,Saídas da RGT,Controlo de Alcoolemia,Controlo de Acidentes de Trabalho,Controlo de Incidentes de Trabalho
-   dado = convert_type_data(dados,"Cronograma - Minutos de Segurança","Em vigor")
+   #dados['Tipo Documento']=='Plano Anual de Formaçăo'
+   #Plano de Acção,Saídas da RGT,Controlo de Alcoolemia,Controlo de Acidentes de Trabalho,Controlo de Incidentes de Trabalho,Controlo - Acções de HSE,Controlo de Impressoras Doadas,Plano de Prevenção de Doenças e Promoção da Saúde,Cronograma - Minutos de Segurança
+  
+   dado = convert_type_data(dados,"Plano Anual de Formaçăo","Em vigor")
+  
    dawnload_pdf(r"http://api.rcsangola.co.ao/api/download-document",dado)
    # dados = extract_file_excel(pasta_destino)
    return dados
