@@ -22,9 +22,8 @@ params = {
     "cabinet": "1f07bd25-6fab-47ec-a89e-3c0f3158226e",
     "count": 2
 }
-
 headers = {
-    "API-KEY": "vbHNzgBPW9L9ud7MNY+oMMYgfhi7nWxisSKAGM2u0pI"
+    "API-KEY": "vteste--"
 }
 
 ##{'API-KEY' : 'vbHNzgBPW9L9ud7MNY+oMMYgfhi7nWxisSKAGM2u0pI'}
@@ -38,7 +37,7 @@ def extract_api(api_url):
     pagina = 1
     dados = pd.DataFrame()
     while True:
-        response = requests.get(api_url,headers=headers,params={'count': limit ,'cabinet':'2c1198ab-111e-40a1-81ea-407104d083da','field':'Tipo Documento','value':'Agenda Semanal'})
+        response = requests.get(api_url,params={'count': limit , 'page': pagina})
         if(response.status_code != 200):
              break
         data = response.json()
@@ -56,7 +55,7 @@ def extract_api(api_url):
  
 
 
-def dawnload_pdf(api_url,dados):
+def dawnload_pdf(api_url,dados,nome_ficheiro):
  try:
   
      if len(dados) >1:
@@ -64,13 +63,14 @@ def dawnload_pdf(api_url,dados):
      docuntoId = dados["Document ID"].replace(" ", "")
      response = requests.get(api_url,params={'cabinetId': dados['cabinetId'] , 'documentId': docuntoId},stream=True)
      if response.status_code == 200:
-        with open(nome_arquivo, "wb") as file:
+        with open(nome_ficheiro, "wb") as file:
          for chunk in response.iter_content(chunk_size=1024):
             file.write(chunk)
     
-        print(f"Download concluído: {nome_arquivo}")
+        print(f"Download concluído: {nome_ficheiro}")
      else:
         print(f"Erro ao baixar o arquivo. Código: ")
+        return 0
  except Exception as e:
      print(f"error : {e}")
      return pd.DataFrame()
@@ -92,12 +92,10 @@ def extrair_Zip(pasta_destino,caminho_zip):
 
 
  
-def extract_file_excel():
+def extract_file_excel(nome_folha_atual,pasta_destino):
     try:
-       caminho = r"C:\Teste\excel_dmc\documento_baixado.xlsx"
-       nome_folha_atual =  "MS - 2025"
        # Verificar se a folha existe
-       with pd.ExcelFile(caminho) as excel:
+       with pd.ExcelFile(pasta_destino) as excel:
          if nome_folha_atual == " ":
             df = pd.read_excel(excel,header=None, dtype=str)
             print(f" Dados da folha: {nome_folha_atual}")
@@ -113,35 +111,30 @@ def extract_file_excel():
          print(f"error : {e}")
          return pd.DataFrame()
     
-def return_data():
+def return_data(nome_folha_atual,nome_ficheiro,titulo):
  try:
   
    os.makedirs(pasta_destino, exist_ok=True)
-   nome_arquivo = os.path.join(pasta_destino, "documento_baixado.xlsx")
-   #dados = extract_api(r"http://api.rcsangola.co.ao/api/qhsa")
-   dados = extract_api(r"http://api.rcsangola.co.ao/api/v1/doc-dinamico")
-   dados = dados['data'].apply(pd.Series)
-   return dados['Tipo Documento'].unique()
+   nome_arquivo = os.path.join(pasta_destino,nome_ficheiro)
+   dados = extract_api(r"http://api.rcsangola.co.ao/api/qhsa")
    if dados.empty : return "Dados Não encontrado"
-   #dados['Tipo Documento']=='Plano Anual de Formaçăo'
-   #Plano de Acção,Saídas da RGT,Controlo de Alcoolemia,Controlo de Acidentes de Trabalho,Controlo de Incidentes de Trabalho,Controlo - Acções de HSE,Controlo de Impressoras Doadas,Plano de Prevenção de Doenças e Promoção da Saúde,Cronograma - Minutos de Segurança
-  
-   dado = convert_type_data(dados,"Plano Anual de Formaçăo","Em vigor")
-  
-   dawnload_pdf(r"http://api.rcsangola.co.ao/api/download-document",dado)
-   # dados = extract_file_excel(pasta_destino)
+   dado = convert_type_data(dados,titulo,"Em vigor")
+   verifica = dawnload_pdf(r"http://api.rcsangola.co.ao/api/download-document",dado,nome_arquivo)
+   if verifica == 0 : return pd.DataFrame()
+   dados = extract_file_excel(nome_folha_atual,nome_arquivo)
    return dados
  except requests.exceptions.RequestException as e:
      print(f" Error : {e}") 
      return pd.DataFrame()
  
 
-def file_backup():
+def file_backup(nome_arquivo):
     try:
-      if os.path.exists(nome_arquivo) and nome_arquivo.lower().endswith(".zip"):
+      caminho_ficheiro = os.path.join(pasta_destino, nome_arquivo)
+      if os.path.exists(caminho_ficheiro):
           os.makedirs(pasta_backup, exist_ok=True)  # Cria a pasta backup se não existir
-          shutil.copy(nome_arquivo, os.path.join(pasta_backup, os.path.basename(nome_arquivo)))
-          print("Arquivo ZIP copiado com sucesso!")
+          shutil.copy(caminho_ficheiro, os.path.join(pasta_backup, os.path.basename(nome_arquivo)))
+          print("Arquivo  copiado com sucesso!")
       else:
            print("O arquivo não existe ou não é um ZIP.")
     except requests.exceptions.RequestException as e:
@@ -154,7 +147,7 @@ def delete_folder():
         for arquivo in os.listdir(pasta_destino):
           caminho_arquivo = os.path.join(pasta_destino, arquivo)
           if caminho_arquivo != pasta_backup:
-             if os.path.isfile(caminho_arquivo) or caminho_arquivo.endswith(".zip"):
+             if os.path.isfile(caminho_arquivo) :
                  os.remove(caminho_arquivo)
              elif os.path.isdir(caminho_arquivo):  # Remove subpastas também
                   shutil.rmtree(caminho_arquivo)

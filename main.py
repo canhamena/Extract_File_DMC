@@ -6,10 +6,8 @@ from source.extract import *
 
 
 def main():
- #load_data()
+ dados = load_data()
  #search_file_excel(pasta_destino)
- #print(dados)
- dados = return_data()
  print(dados)
  """frame = extract_file_excel()
  dados = retorna_Transforma_Cronograma_Minutos_seguranca(frame)
